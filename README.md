@@ -1,1 +1,3 @@
-# maintenance-mode-for-wordpress
+# Maintenance Mode for WordPress®
+
+Coming soon.
