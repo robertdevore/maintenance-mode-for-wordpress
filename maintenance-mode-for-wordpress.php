@@ -1,14 +1,34 @@
 <?php
+
 /**
- * Plugin Name: Maintenance Mode for WordPress®
- * Description: A maintenance mode plugin with customizable landing pages as a custom post type, locked down to the domain root for non-logged-in users.
- * Version: 1.0.1
- * Author: Your Name
- * Text Domain: maintenance-mode-wp
- * Domain Path: /languages
- */
+  * The plugin bootstrap file
+  *
+  * @link              https://robertdevore.com
+  * @since             1.0.0
+  * @package           Maintenance_Mode_For_WordPress
+  *
+  * @wordpress-plugin
+  *
+  * Plugin Name: Maintenance Mode for WordPress®
+  * Description: A maintenance mode plugin with customizable landing pages as a custom post type, locked down to the domain root for non-logged-in users.
+  * Plugin URI:  https://github.com/robertdevore/maintenance-mode-for-wordpress/
+  * Version:     1.0.0
+  * Author:      Robert DeVore
+  * Author URI:  https://robertdevore.com/
+  * License:     GPL-2.0+
+  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
+  * Text Domain: maintenance-mode-wp
+  * Domain Path: /languages
+  * Update URI:  https://github.com/robertdevore/maintenance-mode-for-wordpress/
+  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
+
+// Define the plugin version.
+define( 'MAINTENANCE_MODE_VERSION', '1.0.0' );
+
+// Create a Maintenance Mode page on activation.
+register_activation_hook( __FILE__, [ 'Maintenance_Mode_WP', 'activate' ] );
 
 /**
  * Main plugin class for Maintenance Mode functionality.
@@ -25,6 +45,7 @@ class Maintenance_Mode_WP {
         add_action( 'rest_api_init', [ $this, 'disable_rest_api_for_guests' ] );
         add_filter( 'pre_option_rss_use_excerpt', '__return_false' );
         add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_styles' ] );
+        add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_frontend_styles' ] );
     }
 
     /**
@@ -37,13 +58,32 @@ class Maintenance_Mode_WP {
             'maintenance-mode-wp-styles',
             plugin_dir_url( __FILE__ ) . 'assets/css/style.css',
             [],
-            '1.0.0'
+            MAINTENANCE_MODE_VERSION
         );
+    }
+
+    /**
+     * Enqueue styles for block editor on the frontend to match the backend styles.
+     *
+     * @since  1.0.0
+     * @return void
+     */
+    public function enqueue_frontend_styles() {
+        if ( is_singular( 'maintenance_page' ) ) {
+            wp_enqueue_style( 'wp-block-library' );
+            wp_enqueue_style(
+                'maintenance-mode-wp-styles',
+                plugin_dir_url( __FILE__ ) . 'assets/css/style.css',
+                [],
+                MAINTENANCE_MODE_VERSION
+            );
+        }
     }
 
     /**
      * Registers a custom post type for Maintenance Mode landing pages.
      *
+     * @since  1.0.0
      * @return void
      */
     public function register_cpt() {
@@ -69,6 +109,7 @@ class Maintenance_Mode_WP {
             'exclude_from_search' => true,
             'publicly_queryable'  => false,
             'has_archive'         => false,
+            'show_in_rest'        => true,
             'supports'            => [ 'title', 'editor' ],
         ];
         register_post_type( 'maintenance_page', $args );
@@ -77,22 +118,24 @@ class Maintenance_Mode_WP {
     /**
      * Register the settings page under the Maintenance Mode CPT menu in WordPress.
      *
+     * @since  1.0.0
      * @return void
      */
     public function register_settings_page() {
         add_submenu_page(
-            'edit.php?post_type=maintenance_page', // Parent slug (the CPT menu)
-            esc_html__( 'Settings', 'maintenance-mode-wp' ), // Page title
-            esc_html__( 'Settings', 'maintenance-mode-wp' ), // Menu title
-            'manage_options', // Capability
-            'maintenance-mode-wp', // Menu slug
-            [ $this, 'render_settings_page' ] // Callback function
+            'edit.php?post_type=maintenance_page',
+            esc_html__( 'Settings', 'maintenance-mode-wp' ),
+            esc_html__( 'Settings', 'maintenance-mode-wp' ),
+            'manage_options',
+            'maintenance-mode-wp',
+            [ $this, 'render_settings_page' ]
         );
     }
 
     /**
      * Registers settings fields for enabling Maintenance Mode and configuring the landing page.
      *
+     * @since  1.0.0
      * @return void
      */
     public function register_settings() {
@@ -104,6 +147,7 @@ class Maintenance_Mode_WP {
     /**
      * Renders the Maintenance Mode settings page.
      *
+     * @since  1.0.0
      * @return void
      */
     public function render_settings_page() {
@@ -164,6 +208,7 @@ class Maintenance_Mode_WP {
     /**
      * Restricts access to the frontend for non-logged-in users when Maintenance Mode is enabled.
      *
+     * @since  1.0.0
      * @return void
      */
     public function lock_frontend() {
@@ -184,7 +229,19 @@ class Maintenance_Mode_WP {
         $maintenance_post = get_post( $maintenance_page_id );
         if ( $maintenance_post && 'publish' === $maintenance_post->post_status ) {
             status_header( 200 );
+
+            // Open HTML structure.
+            echo '<!DOCTYPE html><html ' . get_language_attributes() . '><head>';
+            wp_head();
+            echo '</head><body class="maintenance-mode">';
+
+            // Output the maintenance page content.
+            echo '<div class="maintenance-content">';
             echo apply_filters( 'the_content', $maintenance_post->post_content );
+            echo '</div>';
+
+            wp_footer();
+            echo '</body></html>';
             exit;
         } else {
             wp_die( esc_html__( 'Our site is under maintenance. Please check back later.', 'maintenance-mode-wp' ) );
@@ -194,6 +251,7 @@ class Maintenance_Mode_WP {
     /**
      * Disables the REST API for non-logged-in users when Maintenance Mode is enabled.
      *
+     * @since  1.0.0
      * @return void
      */
     public function disable_rest_api_for_guests() {
@@ -205,6 +263,7 @@ class Maintenance_Mode_WP {
     /**
      * Creates a default Maintenance Mode page upon plugin activation.
      *
+     * @since  1.0.0
      * @return void
      */
     public static function activate() {
@@ -222,8 +281,5 @@ class Maintenance_Mode_WP {
     }
 }
 
-// Initialize the plugin
+// Initialize the plugin.
 new Maintenance_Mode_WP();
-
-// Create a Maintenance Mode page on activation
-register_activation_hook( __FILE__, [ 'Maintenance_Mode_WP', 'activate' ] );
