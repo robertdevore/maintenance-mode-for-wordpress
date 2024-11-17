@@ -30,6 +30,19 @@ define( 'MAINTENANCE_MODE_VERSION', '1.0.0' );
 // Create a Maintenance Mode page on activation.
 register_activation_hook( __FILE__, [ 'Maintenance_Mode_WP', 'activate' ] );
 
+// Include the Plugin Update Checker.
+require 'vendor/plugin-update-checker/plugin-update-checker.php';
+use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
+
+$myUpdateChecker = PucFactory::buildUpdateChecker(
+	'https://github.com/robertdevore/maintenance-mode-for-wordpress/',
+	__FILE__,
+	'maintenance-mode-for-wordpress'
+);
+
+// Set the branch that contains the stable release.
+$myUpdateChecker->setBranch( 'main' );
+
 /**
  * Main plugin class for Maintenance Mode functionality.
  */
