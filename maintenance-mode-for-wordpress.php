@@ -1,26 +1,26 @@
 <?php
 
 /**
-  * The plugin bootstrap file
-  *
-  * @link              https://robertdevore.com
-  * @since             1.0.0
-  * @package           Maintenance_Mode_For_WordPress
-  *
-  * @wordpress-plugin
-  *
-  * Plugin Name: Maintenance Mode for WordPress®
-  * Description: A maintenance mode plugin with customizable landing pages as a custom post type, locked down to the domain root for non-logged-in users.
-  * Plugin URI:  https://github.com/robertdevore/maintenance-mode-for-wordpress/
-  * Version:     1.0.0
-  * Author:      Robert DeVore
-  * Author URI:  https://robertdevore.com/
-  * License:     GPL-2.0+
-  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
-  * Text Domain: maintenance-mode-wp
-  * Domain Path: /languages
-  * Update URI:  https://github.com/robertdevore/maintenance-mode-for-wordpress/
-  */
+ * The plugin bootstrap file
+ *
+ * @link              https://robertdevore.com
+ * @since             1.0.0
+ * @package           Maintenance_Mode_For_WordPress
+ *
+ * @wordpress-plugin
+ *
+ * Plugin Name: Maintenance Mode for WordPress®
+ * Description: A maintenance mode plugin with customizable landing pages using the core WordPress® editor, locked down to the domain root for non-logged-in users.
+ * Plugin URI:  https://github.com/robertdevore/maintenance-mode-for-wordpress/
+ * Version:     1.0.0
+ * Author:      Robert DeVore
+ * Author URI:  https://robertdevore.com/
+ * License:     GPL-2.0+
+ * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
+ * Text Domain: maintenance-mode-wp
+ * Domain Path: /languages
+ * Update URI:  https://github.com/robertdevore/maintenance-mode-for-wordpress/
+ */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
@@ -35,9 +35,9 @@ require 'vendor/plugin-update-checker/plugin-update-checker.php';
 use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 
 $myUpdateChecker = PucFactory::buildUpdateChecker(
-	'https://github.com/robertdevore/maintenance-mode-for-wordpress/',
-	__FILE__,
-	'maintenance-mode-for-wordpress'
+    'https://github.com/robertdevore/maintenance-mode-for-wordpress/',
+    __FILE__,
+    'maintenance-mode-for-wordpress'
 );
 
 // Set the branch that contains the stable release.
@@ -64,6 +64,7 @@ class Maintenance_Mode_WP {
     /**
      * Enqueue the plugin's admin styles.
      *
+     * @since  1.0.0
      * @return void
      */
     public function enqueue_styles() {
