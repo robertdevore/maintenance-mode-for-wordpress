@@ -56,7 +56,6 @@ class Maintenance_Mode_WP {
         add_action( 'admin_init', [ $this, 'register_settings' ] );
         add_action( 'template_redirect', [ $this, 'lock_frontend' ] );
         add_action( 'rest_api_init', [ $this, 'disable_rest_api_for_guests' ] );
-        add_filter( 'pre_option_rss_use_excerpt', '__return_false' );
         add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_styles' ] );
         add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_frontend_styles' ] );
     }
@@ -132,7 +131,7 @@ class Maintenance_Mode_WP {
     /**
      * Register the settings page under the Maintenance Mode CPT menu in WordPress.
      *
-     * @since  1.0.0
+     * @since 1.0.0
      * @return void
      */
     public function register_settings_page() {
@@ -141,27 +140,75 @@ class Maintenance_Mode_WP {
             esc_html__( 'Settings', 'maintenance-mode-wp' ),
             esc_html__( 'Settings', 'maintenance-mode-wp' ),
             'manage_options',
-            'maintenance-mode-wp',
+            'maintenance_mode_wp_settings',
             [ $this, 'render_settings_page' ]
         );
     }
 
     /**
-     * Registers settings fields for enabling Maintenance Mode and configuring the landing page.
+     * Registers the settings and their respective fields.
      *
-     * @since  1.0.0
+     * @since 1.0.0
      * @return void
      */
     public function register_settings() {
-        register_setting( 'maintenance_mode_wp_settings', 'maintenance_mode_wp_enabled' );
-        register_setting( 'maintenance_mode_wp_settings', 'maintenance_mode_wp_date' );
-        register_setting( 'maintenance_mode_wp_settings', 'maintenance_mode_wp_cpt_id' );
+        register_setting(
+            'maintenance_mode_wp_settings',
+            'maintenance_mode_wp_enabled',
+            [ 'sanitize_callback' => [ $this, 'sanitize_checkbox' ] ]
+        );
+
+        register_setting(
+            'maintenance_mode_wp_settings',
+            'maintenance_mode_wp_date',
+            [ 'sanitize_callback' => 'sanitize_text_field' ]
+        );
+
+        register_setting(
+            'maintenance_mode_wp_settings',
+            'maintenance_mode_wp_cpt_id',
+            [ 'sanitize_callback' => 'intval' ]
+        );
+
+        add_settings_section(
+            'maintenance_mode_wp_main_section',
+            esc_html__( 'Maintenance Mode Settings', 'maintenance-mode-wp' ),
+            [ $this, 'settings_section_callback' ],
+            'maintenance_mode_wp_settings'
+        );
+
+        add_settings_field(
+            'maintenance_mode_wp_enabled',
+            esc_html__( 'Enable Maintenance Mode', 'maintenance-mode-wp' ),
+            [ $this, 'checkbox_field_callback' ],
+            'maintenance_mode_wp_settings',
+            'maintenance_mode_wp_main_section',
+            [ 'option_name' => 'maintenance_mode_wp_enabled' ]
+        );
+
+        add_settings_field(
+            'maintenance_mode_wp_date',
+            esc_html__( 'Launch Date', 'maintenance-mode-wp' ),
+            [ $this, 'text_field_callback' ],
+            'maintenance_mode_wp_settings',
+            'maintenance_mode_wp_main_section',
+            [ 'option_name' => 'maintenance_mode_wp_date', 'type' => 'date' ]
+        );
+
+        add_settings_field(
+            'maintenance_mode_wp_cpt_id',
+            esc_html__( 'Maintenance Mode Page', 'maintenance-mode-wp' ),
+            [ $this, 'select_field_callback' ],
+            'maintenance_mode_wp_settings',
+            'maintenance_mode_wp_main_section',
+            [ 'option_name' => 'maintenance_mode_wp_cpt_id' ]
+        );
     }
 
     /**
      * Renders the Maintenance Mode settings page.
      *
-     * @since  1.0.0
+     * @since 1.0.0
      * @return void
      */
     public function render_settings_page() {
@@ -177,121 +224,163 @@ class Maintenance_Mode_WP {
                 </a>
             </h1>
             <hr />
+
+            <?php settings_errors(); ?>
+
             <form method="post" action="options.php">
                 <?php
                 settings_fields( 'maintenance_mode_wp_settings' );
                 do_settings_sections( 'maintenance_mode_wp_settings' );
+                submit_button();
                 ?>
-                <table class="form-table">
-                    <tr>
-                        <th scope="row"><?php esc_html_e( 'Enable Maintenance Mode', 'maintenance-mode-wp' ); ?></th>
-                        <td>
-                            <input type="checkbox" name="maintenance_mode_wp_enabled" value="1" <?php checked( get_option( 'maintenance_mode_wp_enabled' ), 1 ); ?>>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row"><?php esc_html_e( 'Launch Date', 'maintenance-mode-wp' ); ?></th>
-                        <td>
-                            <input type="date" name="maintenance_mode_wp_date" value="<?php echo esc_attr( get_option( 'maintenance_mode_wp_date' ) ); ?>">
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row"><?php esc_html_e( 'Maintenance Mode Page', 'maintenance-mode-wp' ); ?></th>
-                        <td>
-                            <select name="maintenance_mode_wp_cpt_id">
-                                <?php
-                                $maintenance_pages = get_posts( [
-                                    'post_type'   => 'maintenance_page',
-                                    'post_status' => 'publish',
-                                    'numberposts' => -1,
-                                ] );
-                                foreach ( $maintenance_pages as $page ) {
-                                    echo '<option value="' . esc_attr( $page->ID ) . '" ' . selected( get_option( 'maintenance_mode_wp_cpt_id' ), $page->ID, false ) . '>' . esc_html( $page->post_title ) . '</option>';
-                                }
-                                ?>
-                            </select>
-                        </td>
-                    </tr>
-                </table>
-                <?php submit_button(); ?>
             </form>
         </div>
         <?php
     }
 
     /**
-     * Restricts access to the frontend for non-logged-in users when Maintenance Mode is enabled.
-     *
-     * @since  1.0.0
-     * @return void
-     */
-    public function lock_frontend() {
-        if ( is_user_logged_in() || ! get_option( 'maintenance_mode_wp_enabled' ) ) {
-            return;
-        }
-
-        $maintenance_page_id = get_option( 'maintenance_mode_wp_cpt_id' );
-        if ( ! $maintenance_page_id || get_queried_object_id() == $maintenance_page_id ) {
-            return;
-        }
-
-        $launch_date = get_option( 'maintenance_mode_wp_date' );
-        if ( $launch_date && strtotime( $launch_date ) <= current_time( 'timestamp' ) ) {
-            return;
-        }
-
-        $maintenance_post = get_post( $maintenance_page_id );
-        if ( $maintenance_post && 'publish' === $maintenance_post->post_status ) {
-            status_header( 200 );
-
-            // Open HTML structure.
-            echo '<!DOCTYPE html><html ' . get_language_attributes() . '><head>';
-            wp_head();
-            echo '</head><body class="maintenance-mode">';
-
-            // Output the maintenance page content.
-            echo '<div class="maintenance-content">';
-            echo apply_filters( 'the_content', $maintenance_post->post_content );
-            echo '</div>';
-
-            wp_footer();
-            echo '</body></html>';
-            exit;
-        } else {
-            wp_die( esc_html__( 'Our site is under maintenance. Please check back later.', 'maintenance-mode-wp' ) );
-        }
-    }
-
-    /**
      * Disables the REST API for non-logged-in users when Maintenance Mode is enabled.
      *
-     * @since  1.0.0
+     * @since 1.0.0
      * @return void
      */
     public function disable_rest_api_for_guests() {
         if ( ! is_user_logged_in() && get_option( 'maintenance_mode_wp_enabled' ) ) {
-            wp_die( esc_html__( 'REST API access is restricted while the site is under maintenance.', 'maintenance-mode-wp' ), 403 );
+            // Allow REST API access for the block editor (required for admin screens).
+            if ( defined( 'REST_REQUEST' ) && REST_REQUEST && ! is_admin() ) {
+                wp_die(
+                    esc_html__( 'REST API access is restricted while the site is under maintenance.', 'maintenance-mode-wp' ),
+                    esc_html__( 'Maintenance Mode', 'maintenance-mode-wp' ),
+                    [ 'response' => 403 ]
+                );
+            }
         }
     }
 
     /**
-     * Creates a default Maintenance Mode page upon plugin activation.
+     * Restricts access to the frontend for non-logged-in users when Maintenance Mode is enabled.
+     *
+     * @since 1.0.0
+     * @return void
+     */
+    public function lock_frontend() {
+        // Check if maintenance mode is enabled and the user is not logged in.
+        if ( ! is_user_logged_in() && get_option( 'maintenance_mode_wp_enabled' ) ) {
+            $maintenance_page_id = get_option( 'maintenance_mode_wp_cpt_id' );
+
+            // Ensure we have a valid maintenance page ID.
+            if ( $maintenance_page_id ) {
+                $maintenance_post = get_post( $maintenance_page_id );
+
+                // Display the maintenance page content if it's published.
+                if ( $maintenance_post && 'publish' === $maintenance_post->post_status ) {
+                    status_header( 503 );
+
+                    // Output the maintenance page content.
+                    echo '<!DOCTYPE html>';
+                    echo '<html ' . get_language_attributes() . '>';
+                    echo '<head>';
+                    echo '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
+                    echo '<meta http-equiv="Content-Type" content="text/html; charset=' . esc_attr( get_bloginfo( 'charset' ) ) . '">';
+                    echo '<title>' . esc_html( get_bloginfo( 'name' ) ) . '</title>';
+                    wp_head();
+                    echo '</head>';
+                    echo '<body>';
+                    echo '<div class="maintenance-mode-content">';
+                    echo apply_filters( 'the_content', $maintenance_post->post_content );
+                    echo '</div>';
+                    wp_footer();
+                    echo '</body>';
+                    echo '</html>';
+                    exit;
+                }
+            }
+
+            // Fallback message if no maintenance page is configured.
+            wp_die(
+                esc_html__( 'Our site is currently under maintenance. Please check back later.', 'maintenance-mode-wp' ),
+                esc_html__( 'Maintenance Mode', 'maintenance-mode-wp' ),
+                [ 'response' => 503 ]
+            );
+        }
+    }
+
+    /**
+     * Checkbox field callback.
+     *
+     * @param array $args Field arguments.
+     * 
+     * @since  1.0.0
+     * @return void
+     */
+    public function checkbox_field_callback( $args ) {
+        $option = get_option( $args['option_name'] );
+        ?>
+        <input type="checkbox" name="<?php echo esc_attr( $args['option_name'] ); ?>" value="1" <?php checked( $option, 1 ); ?>>
+        <?php
+    }
+
+    /**
+     * Text field callback.
+     *
+     * @param array $args Field arguments.
+     * 
+     * @since  1.0.0
+     * @return void
+     */
+    public function text_field_callback( $args ) {
+        $option = get_option( $args['option_name'] );
+        ?>
+        <input type="<?php echo esc_attr( $args['type'] ); ?>" name="<?php echo esc_attr( $args['option_name'] ); ?>" value="<?php echo esc_attr( $option ); ?>">
+        <?php
+    }
+
+    /**
+     * Select field callback.
+     *
+     * @param array $args Field arguments.
+     * 
+     * @since  1.0.0
+     * @return void
+     */
+    public function select_field_callback( $args ) {
+        $option = get_option( $args['option_name'] );
+        $maintenance_pages = get_posts( [
+            'post_type'   => 'maintenance_page',
+            'post_status' => 'publish',
+            'numberposts' => -1,
+        ] );
+        ?>
+        <select name="<?php echo esc_attr( $args['option_name'] ); ?>">
+            <?php foreach ( $maintenance_pages as $page ) : ?>
+                <option value="<?php echo esc_attr( $page->ID ); ?>" <?php selected( $option, $page->ID ); ?>>
+                    <?php echo esc_html( $page->post_title ); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+        <?php
+    }
+
+    /**
+     * Settings section callback.
      *
      * @since  1.0.0
      * @return void
      */
-    public static function activate() {
-        if ( ! get_option( 'maintenance_mode_wp_cpt_id' ) ) {
-            $page_id = wp_insert_post( [
-                'post_type'    => 'maintenance_page',
-                'post_title'   => esc_html__( 'Default Maintenance Page', 'maintenance-mode-wp' ),
-                'post_content' => esc_html__( 'Our site is currently under maintenance. Please check back soon.', 'maintenance-mode-wp' ),
-                'post_status'  => 'publish',
-            ] );
-            if ( ! is_wp_error( $page_id ) ) {
-                update_option( 'maintenance_mode_wp_cpt_id', $page_id );
-            }
-        }
+    public function settings_section_callback() {
+        echo '<p>' . esc_html__( 'Configure the maintenance mode settings below.', 'maintenance-mode-wp' ) . '</p>';
+    }
+
+    /**
+     * Sanitize checkbox input.
+     *
+     * @param mixed $input Input value.
+     * 
+     * @since  1.0.0
+     * @return int Sanitized value.
+     */
+    public function sanitize_checkbox( $input ) {
+        return ( isset( $input ) && '1' === $input ) ? 1 : 0;
     }
 }
 
