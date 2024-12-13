@@ -76,6 +76,26 @@ class Maintenance_Mode_WP {
     }
 
     /**
+     * Activation hook callback.
+     *
+     * @since 1.0.1
+     * @return void
+     */
+    public static function activate() {
+        if ( ! get_option( 'maintenance_mode_wp_enabled' ) ) {
+            update_option( 'maintenance_mode_wp_enabled', 0 );
+        }
+
+        if ( ! get_option( 'maintenance_mode_wp_date' ) ) {
+            update_option( 'maintenance_mode_wp_date', '' );
+        }
+
+        if ( ! get_option( 'maintenance_mode_wp_cpt_id' ) ) {
+            update_option( 'maintenance_mode_wp_cpt_id', 0 );
+        }
+    }
+
+    /**
      * Enqueue styles for block editor on the frontend to match the backend styles.
      *
      * @since  1.0.0
