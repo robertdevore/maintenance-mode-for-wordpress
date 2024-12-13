@@ -12,7 +12,7 @@
  * Plugin Name: Maintenance Mode for WordPress®
  * Description: A maintenance mode plugin with customizable landing pages using the core WordPress® editor, locked down to the domain root for non-logged-in users.
  * Plugin URI:  https://github.com/robertdevore/maintenance-mode-for-wordpress/
- * Version:     1.0.0
+ * Version:     1.0.1
  * Author:      Robert DeVore
  * Author URI:  https://robertdevore.com/
  * License:     GPL-2.0+
@@ -25,7 +25,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 // Define the plugin version.
-define( 'MAINTENANCE_MODE_VERSION', '1.0.0' );
+define( 'MAINTENANCE_MODE_VERSION', '1.0.1' );
 
 // Create a Maintenance Mode page on activation.
 register_activation_hook( __FILE__, [ 'Maintenance_Mode_WP', 'activate' ] );
