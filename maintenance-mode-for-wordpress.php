@@ -273,7 +273,7 @@ class Maintenance_Mode_WP {
                 wp_die(
                     esc_html__( 'REST API access is restricted while the site is under maintenance.', 'maintenance-mode-wp' ),
                     esc_html__( 'Maintenance Mode', 'maintenance-mode-wp' ),
-                    [ 'response' => 403 ]
+                    [ 'response' => apply_filters( 'mmwp_rest_api_response_code', 503 ) ]
                 );
             }
         }
@@ -322,7 +322,7 @@ class Maintenance_Mode_WP {
             wp_die(
                 esc_html__( 'Our site is currently under maintenance. Please check back later.', 'maintenance-mode-wp' ),
                 esc_html__( 'Maintenance Mode', 'maintenance-mode-wp' ),
-                [ 'response' => 503 ]
+                [ 'response' => apply_filters( 'mmwp_rest_api_response_code', 503 ) ]
             );
         }
     }
