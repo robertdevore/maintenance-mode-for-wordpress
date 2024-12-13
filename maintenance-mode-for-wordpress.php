@@ -49,6 +49,8 @@ $myUpdateChecker->setBranch( 'main' );
 class Maintenance_Mode_WP {
     /**
      * Constructor to initialize hooks and actions.
+     * 
+     * @since 1.0.0
      */
     public function __construct() {
         add_action( 'init', [ $this, 'register_cpt' ] );
@@ -151,7 +153,7 @@ class Maintenance_Mode_WP {
     /**
      * Register the settings page under the Maintenance Mode CPT menu in WordPress.
      *
-     * @since 1.0.0
+     * @since  1.0.0
      * @return void
      */
     public function register_settings_page() {
@@ -168,7 +170,7 @@ class Maintenance_Mode_WP {
     /**
      * Registers the settings and their respective fields.
      *
-     * @since 1.0.0
+     * @since  1.0.0
      * @return void
      */
     public function register_settings() {
@@ -228,14 +230,14 @@ class Maintenance_Mode_WP {
     /**
      * Renders the Maintenance Mode settings page.
      *
-     * @since 1.0.0
+     * @since  1.0.0
      * @return void
      */
     public function render_settings_page() {
         ?>
         <div class="wrap">
             <h1>
-            <?php esc_html_e( 'Maintenance Mode Settings', 'maintenance-mode-wp' ); ?>
+                <?php esc_html_e( 'Maintenance Mode Settings', 'maintenance-mode-wp' ); ?>
                 <a id="maintenance-mode-support-btn" href="https://robertdevore.com/contact/" target="_blank" class="button button-alt" style="margin-left: 10px;">
                     <span class="dashicons dashicons-format-chat" style="vertical-align: middle;"></span> <?php esc_html_e( 'Support', 'markdown-editor' ); ?>
                 </a>
@@ -261,7 +263,7 @@ class Maintenance_Mode_WP {
     /**
      * Disables the REST API for non-logged-in users when Maintenance Mode is enabled.
      *
-     * @since 1.0.0
+     * @since  1.0.0
      * @return void
      */
     public function disable_rest_api_for_guests() {
@@ -280,7 +282,7 @@ class Maintenance_Mode_WP {
     /**
      * Restricts access to the frontend for non-logged-in users when Maintenance Mode is enabled.
      *
-     * @since 1.0.0
+     * @since  1.0.0
      * @return void
      */
     public function lock_frontend() {
