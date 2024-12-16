@@ -27,6 +27,16 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 // Define the plugin version.
 define( 'MAINTENANCE_MODE_VERSION', '1.0.1' );
 
+// Load plugin text domain for translations
+function maintenance_mode_wp_load_textdomain() {
+    load_plugin_textdomain( 
+        'maintenance-mode-wp', 
+        false, 
+        dirname( plugin_basename( __FILE__ ) ) . '/languages/'
+    );
+}
+add_action( 'plugins_loaded', 'maintenance_mode_wp_load_textdomain' );
+
 // Create a Maintenance Mode page on activation.
 register_activation_hook( __FILE__, [ 'Maintenance_Mode_WP', 'activate' ] );
 
