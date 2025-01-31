@@ -53,6 +53,16 @@ $myUpdateChecker = PucFactory::buildUpdateChecker(
 // Set the branch that contains the stable release.
 $myUpdateChecker->setBranch( 'main' );
 
+// Include the autoload for Composer.
+if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
+    require_once __DIR__ . '/vendor/autoload.php';
+}
+
+use RobertDevore\WPComCheck\WPComPluginHandler;
+
+// Initialize the WPComPluginHandler with the plugin slug and learn more link.
+new WPComPluginHandler( plugin_basename( __FILE__ ), 'https://robertdevore.com/why-this-plugin-doesnt-support-wordpress-com-hosting/' );
+
 /**
  * Main plugin class for Maintenance Mode functionality.
  */
@@ -436,113 +446,3 @@ class Maintenance_Mode_WP {
 
 // Initialize the plugin.
 new Maintenance_Mode_WP();
-
-/**
- * Helper function to handle WordPress.com environment checks.
- *
- * @param string $plugin_slug     The plugin slug.
- * @param string $learn_more_link The link to more information.
- * 
- * @since  1.1.0
- * @return bool
- */
-function wp_com_plugin_check( $plugin_slug, $learn_more_link ) {
-    // Check if the site is hosted on WordPress.com.
-    if ( defined( 'IS_WPCOM' ) && IS_WPCOM ) {
-        // Ensure the deactivate_plugins function is available.
-        if ( ! function_exists( 'deactivate_plugins' ) ) {
-            require_once ABSPATH . 'wp-admin/includes/plugin.php';
-        }
-
-        // Deactivate the plugin if in the admin area.
-        if ( is_admin() ) {
-            deactivate_plugins( $plugin_slug );
-
-            // Add a deactivation notice for later display.
-            add_option( 'wpcom_deactivation_notice', $learn_more_link );
-
-            // Prevent further execution.
-            return true;
-        }
-    }
-
-    return false;
-}
-
-/**
- * Auto-deactivate the plugin if running in an unsupported environment.
- *
- * @since  1.1.0
- * @return void
- */
-function wpcom_auto_deactivation() {
-    if ( wp_com_plugin_check( plugin_basename( __FILE__ ), 'https://robertdevore.com/why-this-plugin-doesnt-support-wordpress-com-hosting/' ) ) {
-        return; // Stop execution if deactivated.
-    }
-}
-add_action( 'plugins_loaded', 'wpcom_auto_deactivation' );
-
-/**
- * Display an admin notice if the plugin was deactivated due to hosting restrictions.
- *
- * @since  1.1.0
- * @return void
- */
-function wpcom_admin_notice() {
-    $notice_link = get_option( 'wpcom_deactivation_notice' );
-    if ( $notice_link ) {
-        ?>
-        <div class="notice notice-error">
-            <p>
-                <?php
-                echo wp_kses_post(
-                    sprintf(
-                        __( 'Maintenance Mode for WordPress® has been deactivated because it cannot be used on WordPress.com-hosted websites. %s', 'maintenance-mode-wp' ),
-                        '<a href="' . esc_url( $notice_link ) . '" target="_blank" rel="noopener">' . __( 'Learn more', 'maintenance-mode-wp' ) . '</a>'
-                    )
-                );
-                ?>
-            </p>
-        </div>
-        <?php
-        delete_option( 'wpcom_deactivation_notice' );
-    }
-}
-add_action( 'admin_notices', 'wpcom_admin_notice' );
-
-/**
- * Prevent plugin activation on WordPress.com-hosted sites.
- *
- * @since  1.1.0
- * @return void
- */
-function wpcom_activation_check() {
-    if ( wp_com_plugin_check( plugin_basename( __FILE__ ), 'https://robertdevore.com/why-this-plugin-doesnt-support-wordpress-com-hosting/' ) ) {
-        // Display an error message and stop activation.
-        wp_die(
-            wp_kses_post(
-                sprintf(
-                    '<h1>%s</h1><p>%s</p><p><a href="%s" target="_blank" rel="noopener">%s</a></p>',
-                    __( 'Plugin Activation Blocked', 'maintenance-mode-wp' ),
-                    __( 'This plugin cannot be activated on WordPress.com-hosted websites. It is restricted due to concerns about WordPress.com policies impacting the community.', 'maintenance-mode-wp' ),
-                    esc_url( 'https://robertdevore.com/why-this-plugin-doesnt-support-wordpress-com-hosting/' ),
-                    __( 'Learn more', 'maintenance-mode-wp' )
-                )
-            ),
-            esc_html__( 'Plugin Activation Blocked', 'maintenance-mode-wp' ),
-            [ 'back_link' => true ]
-        );
-    }
-}
-register_activation_hook( __FILE__, 'wpcom_activation_check' );
-
-/**
- * Add a deactivation flag when the plugin is deactivated.
- *
- * @since  1.1.0
- * @return void
- */
-function wpcom_deactivation_flag() {
-    add_option( 'wpcom_deactivation_notice', 'https://robertdevore.com/why-this-plugin-doesnt-support-wordpress-com-hosting/' );
-}
-register_deactivation_hook( __FILE__, 'wpcom_deactivation_flag' );
