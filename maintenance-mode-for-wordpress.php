@@ -69,18 +69,25 @@ new WPComPluginHandler( plugin_basename( __FILE__ ), 'https://robertdevore.com/w
  * @since 1.1.0
  */
 function maintenance_mode_wp_admin_bar_notice( $wp_admin_bar ) {
-    // Check if Maintenance Mode is enabled.
-    if ( get_option( 'maintenance_mode_wp_enabled' ) ) {
+    // Check if Maintenance Mode or Coming Soon Mode is enabled.
+    $maintenance_mode = get_option( 'maintenance_mode_wp_enabled' );
+    $coming_soon_mode = get_option( 'maintenance_mode_wp_coming_soon' );
+
+    if ( $maintenance_mode || $coming_soon_mode ) {
+        // Determine the correct message.
+        $mode_text = $maintenance_mode ? esc_html__( 'MAINTENANCE MODE IS ACTIVE', 'maintenance-mode-wp' ) : esc_html__( 'COMING SOON MODE IS ACTIVE', 'maintenance-mode-wp' );
+
         // Settings page URL.
         $settings_url = admin_url( 'edit.php?post_type=maintenance_page&page=maintenance_mode_wp_settings' );
 
         // Add the notice to the admin bar.
         $wp_admin_bar->add_node( [
             'id'    => 'maintenance-mode-notice',
-            'title' => '<span>' . esc_html__( 'MAINTENANCE MODE IS ACTIVE', 'maintenance-mode-wp' ) . '</span>',
+            'title' => '<span>' . $mode_text . '</span>',
             'href'  => $settings_url,
             'meta'  => [
                 'title' => __( 'Click to manage Maintenance Mode settings', 'maintenance-mode-wp' ),
+                'class' => 'maintenance-mode-toolbar',
             ],
         ] );
     }
@@ -93,8 +100,8 @@ add_action( 'admin_bar_menu', 'maintenance_mode_wp_admin_bar_notice', 100 );
  * @since 1.1.0
  */
 function maintenance_mode_wp_enqueue_toolbar_styles() {
-    // Check if Maintenance Mode is active and the admin toolbar is visible.
-    if ( get_option( 'maintenance_mode_wp_enabled' ) && is_admin_bar_showing() ) {
+    // Check if either Maintenance Mode or Coming Soon Mode is active and if the toolbar is visible.
+    if ( ( get_option( 'maintenance_mode_wp_enabled' ) || get_option( 'maintenance_mode_wp_coming_soon' ) ) && is_admin_bar_showing() ) {
         wp_enqueue_style(
             'maintenance-mode-wp-toolbar-styles',
             plugin_dir_url( __FILE__ ) . 'assets/css/toolbar.css',
@@ -187,26 +194,26 @@ class Maintenance_Mode_WP {
     public function register_cpt() {
         $args = [
             'labels' => [
-                'name'          => esc_html__( 'Maintenance', 'maintenance-mode-wp' ),
-                'singular_name' => esc_html__( 'Maintenance Page', 'maintenance-mode-wp' ),
-                'menu_name' => esc_html__( 'Maintenance Pages', 'maintenance-mode-wp' ),
-        		'name_admin_bar' => esc_html__( 'Maintenance Pages', 'maintenance-mode-wp' ),
-        		'all_items' => esc_html__( 'All Maintenance Pages', 'maintenance-mode-wp' ),
-        		'add_new_item' => esc_html__( 'Add New Maintenance Page', 'maintenance-mode-wp' ),
-        		'add_new' => esc_html__( 'Add New', 'maintenance-mode-wp' ),
-        		'new_item' => esc_html__( 'New Maintenance Page', 'maintenance-mode-wp' ),
-        		'edit_item' => esc_html__( 'Edit Maintenance Page', 'maintenance-mode-wp' ),
-        		'update_item' => esc_html__( 'Update Maintenance Page', 'maintenance-mode-wp' ),
-        		'view_item' => esc_html__( 'View Maintenance Page', 'maintenance-mode-wp' ),
-        		'view_items' => esc_html__( 'View Maintenance Pages', 'maintenance-mode-wp' ),
-        		'search_items' => esc_html__( 'Search Maintenance Pages', 'maintenance-mode-wp' ),
-        		'not_found' => esc_html__( 'Maintenance Page Not Found', 'maintenance-mode-wp' ),
-        		'not_found_in_trash' => esc_html__( 'Maintenance Page Not Found in Trash', 'maintenance-mode-wp' ),
-        		'insert_into_item' => esc_html__( 'Insert into Maintenance Page', 'maintenance-mode-wp' ),
-        		'uploaded_to_this_item' => esc_html__( 'Uploaded to this Maintenance Page', 'maintenance-mode-wp' ),
-        		'items_list' => esc_html__( 'Maintenance Pages List', 'maintenance-mode-wp' ),
-        		'items_list_navigation' => esc_html__( 'Maintenance Pages List Navigation', 'maintenance-mode-wp' ),
-        		'filter_items_list' => esc_html__( 'Filter Maintenance Pages List', 'maintenance-mode-wp' ),
+                'name'                  => esc_html__( 'Maintenance', 'maintenance-mode-wp' ),
+                'singular_name'         => esc_html__( 'Maintenance Page', 'maintenance-mode-wp' ),
+                'menu_name'             => esc_html__( 'Maintenance Pages', 'maintenance-mode-wp' ),
+                'name_admin_bar'        => esc_html__( 'Maintenance Pages', 'maintenance-mode-wp' ),
+                'all_items'             => esc_html__( 'All Maintenance Pages', 'maintenance-mode-wp' ),
+                'add_new_item'          => esc_html__( 'Add New Maintenance Page', 'maintenance-mode-wp' ),
+                'add_new'               => esc_html__( 'Add New', 'maintenance-mode-wp' ),
+                'new_item'              => esc_html__( 'New Maintenance Page', 'maintenance-mode-wp' ),
+                'edit_item'             => esc_html__( 'Edit Maintenance Page', 'maintenance-mode-wp' ),
+                'update_item'           => esc_html__( 'Update Maintenance Page', 'maintenance-mode-wp' ),
+                'view_item'             => esc_html__( 'View Maintenance Page', 'maintenance-mode-wp' ),
+                'view_items'            => esc_html__( 'View Maintenance Pages', 'maintenance-mode-wp' ),
+                'search_items'          => esc_html__( 'Search Maintenance Pages', 'maintenance-mode-wp' ),
+                'not_found'             => esc_html__( 'Maintenance Page Not Found', 'maintenance-mode-wp' ),
+                'not_found_in_trash'    => esc_html__( 'Maintenance Page Not Found in Trash', 'maintenance-mode-wp' ),
+                'insert_into_item'      => esc_html__( 'Insert into Maintenance Page', 'maintenance-mode-wp' ),
+                'uploaded_to_this_item' => esc_html__( 'Uploaded to this Maintenance Page', 'maintenance-mode-wp' ),
+                'items_list'            => esc_html__( 'Maintenance Pages List', 'maintenance-mode-wp' ),
+                'items_list_navigation' => esc_html__( 'Maintenance Pages List Navigation', 'maintenance-mode-wp' ),
+                'filter_items_list'     => esc_html__( 'Filter Maintenance Pages List', 'maintenance-mode-wp' ),
             ],
             'public'              => false,
             'show_ui'             => current_user_can( 'administrator' ),
@@ -273,6 +280,12 @@ class Maintenance_Mode_WP {
             [ 'sanitize_callback' => 'intval' ]
         );
 
+        register_setting(
+            'maintenance_mode_wp_settings',
+            'maintenance_mode_wp_coming_soon',
+            [ 'sanitize_callback' => [ $this, 'sanitize_checkbox' ] ]
+        );        
+
         add_settings_section(
             'maintenance_mode_wp_main_section',
             esc_html__( 'Maintenance Mode Settings', 'maintenance-mode-wp' ),
@@ -287,6 +300,15 @@ class Maintenance_Mode_WP {
             'maintenance_mode_wp_settings',
             'maintenance_mode_wp_main_section',
             [ 'option_name' => 'maintenance_mode_wp_enabled' ]
+        );
+
+        add_settings_field(
+            'maintenance_mode_wp_coming_soon',
+            esc_html__( 'Enable Coming Soon Mode', 'maintenance-mode-wp' ),
+            [ $this, 'checkbox_field_callback' ],
+            'maintenance_mode_wp_settings',
+            'maintenance_mode_wp_main_section',
+            [ 'option_name' => 'maintenance_mode_wp_coming_soon' ]
         );
 
         add_settings_field(
@@ -367,19 +389,31 @@ class Maintenance_Mode_WP {
      * @return void
      */
     public function lock_frontend() {
-        // Check if maintenance mode is enabled and the user is not logged in.
-        if ( ! is_user_logged_in() && get_option( 'maintenance_mode_wp_enabled' ) ) {
-            $maintenance_page_id = get_option( 'maintenance_mode_wp_cpt_id' );
+        // Get the current mode settings
+        $maintenance_mode = get_option( 'maintenance_mode_wp_enabled' );
+        $coming_soon_mode = get_option( 'maintenance_mode_wp_coming_soon' );
 
-            // Ensure we have a valid maintenance page ID.
-            if ( $maintenance_page_id ) {
-                $maintenance_post = get_post( $maintenance_page_id );
+        // If neither mode is enabled, do nothing
+        if ( ! $maintenance_mode && ! $coming_soon_mode ) {
+            return;
+        }
 
-                // Display the maintenance page content if it's published.
-                if ( $maintenance_post && 'publish' === $maintenance_post->post_status ) {
-                    status_header( 503 );
+        // Only lock down for non-logged-in users
+        if ( ! is_user_logged_in() ) {
+            $page_id = get_option( 'maintenance_mode_wp_cpt_id' );
 
-                    // Output the maintenance page content.
+            // Ensure a valid Maintenance Page exists
+            if ( $page_id ) {
+                $page = get_post( $page_id );
+
+                // Display the "Maintenance" or "Coming Soon" page if published
+                if ( $page && 'publish' === $page->post_status ) {
+                    // If Maintenance Mode is active, return a 503 status.
+                    if ( $maintenance_mode ) {
+                        status_header( 503 );
+                    }
+
+                    // Output the landing page content.
                     echo '<!DOCTYPE html>';
                     echo '<html ' . get_language_attributes() . '>';
                     echo '<head>';
@@ -390,7 +424,7 @@ class Maintenance_Mode_WP {
                     echo '</head>';
                     echo '<body>';
                     echo '<div class="maintenance-mode-content">';
-                    echo apply_filters( 'the_content', $maintenance_post->post_content );
+                    echo apply_filters( 'the_content', $page->post_content );
                     echo '</div>';
                     wp_footer();
                     echo '</body>';
@@ -398,12 +432,15 @@ class Maintenance_Mode_WP {
                     exit;
                 }
             }
-
-            // Fallback message if no maintenance page is configured.
+    
+            // If no valid page exists, show a generic fallback message
+            if ( $maintenance_mode ) {
+                status_header( 503 );
+            }
             wp_die(
-                esc_html__( 'Our site is currently under maintenance. Please check back later.', 'maintenance-mode-wp' ),
-                esc_html__( 'Maintenance Mode', 'maintenance-mode-wp' ),
-                [ 'response' => apply_filters( 'mmwp_rest_api_response_code', 503 ) ]
+                esc_html__( 'Our site is currently unavailable. Please check back later.', 'maintenance-mode-wp' ),
+                esc_html__( 'Site Unavailable', 'maintenance-mode-wp' ),
+                [ 'response' => $maintenance_mode ? 503 : 200 ]
             );
         }
     }
@@ -417,8 +454,9 @@ class Maintenance_Mode_WP {
      * @return void
      */
     public function checkbox_field_callback( $args ) {
-        $option = get_option( $args['option_name'] );
+        $option = get_option( $args['option_name'], 0 ); // Default to 0 if not set.
         ?>
+        <input type="hidden" name="<?php echo esc_attr( $args['option_name'] ); ?>" value="0">
         <input type="checkbox" name="<?php echo esc_attr( $args['option_name'] ); ?>" value="1" <?php checked( $option, 1 ); ?>>
         <?php
     }
@@ -483,7 +521,7 @@ class Maintenance_Mode_WP {
      * @return int Sanitized value.
      */
     public function sanitize_checkbox( $input ) {
-        return ( isset( $input ) && '1' === $input ) ? 1 : 0;
+        return ! empty( $input ) ? 1 : 0;
     }
 }
 
