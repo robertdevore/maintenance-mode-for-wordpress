@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Maintenance Mode for WordPress®\n"
-"POT-Creation-Date: 2024-12-12 23:30-0500\n"
-"PO-Revision-Date: 2024-12-12 23:32-0500\n"
+"POT-Creation-Date: 2025-01-31 13:07-0500\n"
+"PO-Revision-Date: 2025-01-31 13:08-0500\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: es_MX\n"
@@ -14,93 +14,176 @@ msgstr ""
 "X-Poedit-Flags-xgettext: --add-comments=translators:\n"
 "X-Poedit-WPHeader: maintenance-mode-for-wordpress.php\n"
 "X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;"
-"esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;"
-"esc_html_x:1,2c;_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.min.js\n"
 "X-Poedit-SearchPathExcluded-1: vendor\n"
 
-#: maintenance-mode-for-wordpress.php:125
+#: maintenance-mode-for-wordpress.php:78
+msgid "MAINTENANCE MODE IS ACTIVE"
+msgstr "EL MODO DE MANTENIMIENTO ESTÁ ACTIVO"
+
+#: maintenance-mode-for-wordpress.php:78
+msgid "COMING SOON MODE IS ACTIVE"
+msgstr "EL MODO \"PRÓXIMAMENTE\" ESTÁ ACTIVO"
+
+#: maintenance-mode-for-wordpress.php:89
+msgid "Click to manage Maintenance Mode settings"
+msgstr "Haga clic para gestionar la configuración del modo de mantenimiento"
+
+#: maintenance-mode-for-wordpress.php:197
 msgid "Maintenance"
 msgstr "Mantenimiento"
 
-#: maintenance-mode-for-wordpress.php:126
+#: maintenance-mode-for-wordpress.php:198
 msgid "Maintenance Page"
 msgstr "Página de mantenimiento"
 
-#: maintenance-mode-for-wordpress.php:160
-#: maintenance-mode-for-wordpress.php:161
+#: maintenance-mode-for-wordpress.php:199
+#: maintenance-mode-for-wordpress.php:200
+msgid "Maintenance Pages"
+msgstr "Páginas de mantenimiento"
+
+#: maintenance-mode-for-wordpress.php:201
+msgid "All Maintenance Pages"
+msgstr "Todas las páginas de mantenimiento"
+
+#: maintenance-mode-for-wordpress.php:202
+msgid "Add New Maintenance Page"
+msgstr "Añadir nueva página de mantenimiento"
+
+#: maintenance-mode-for-wordpress.php:203
+msgid "Add New"
+msgstr "Añadir nuevo"
+
+#: maintenance-mode-for-wordpress.php:204
+msgid "New Maintenance Page"
+msgstr "Nueva página de mantenimiento"
+
+#: maintenance-mode-for-wordpress.php:205
+msgid "Edit Maintenance Page"
+msgstr "Editar página de mantenimiento"
+
+#: maintenance-mode-for-wordpress.php:206
+msgid "Update Maintenance Page"
+msgstr "Actualizar la página de mantenimiento"
+
+#: maintenance-mode-for-wordpress.php:207
+msgid "View Maintenance Page"
+msgstr "Ver la página de mantenimiento"
+
+#: maintenance-mode-for-wordpress.php:208
+msgid "View Maintenance Pages"
+msgstr "Ver las páginas de mantenimiento"
+
+#: maintenance-mode-for-wordpress.php:209
+msgid "Search Maintenance Pages"
+msgstr "Buscar páginas de mantenimiento"
+
+#: maintenance-mode-for-wordpress.php:210
+msgid "Maintenance Page Not Found"
+msgstr "Mantenimiento Página no encontrada"
+
+#: maintenance-mode-for-wordpress.php:211
+msgid "Maintenance Page Not Found in Trash"
+msgstr "Página de mantenimiento no encontrada en la papelera"
+
+#: maintenance-mode-for-wordpress.php:212
+msgid "Insert into Maintenance Page"
+msgstr "Insertar en la página de mantenimiento"
+
+#: maintenance-mode-for-wordpress.php:213
+msgid "Uploaded to this Maintenance Page"
+msgstr "Cargado en esta página de mantenimiento"
+
+#: maintenance-mode-for-wordpress.php:214
+msgid "Maintenance Pages List"
+msgstr "Lista de páginas de mantenimiento"
+
+#: maintenance-mode-for-wordpress.php:215
+msgid "Maintenance Pages List Navigation"
+msgstr "Páginas de mantenimiento Lista de navegación"
+
+#: maintenance-mode-for-wordpress.php:216
+msgid "Filter Maintenance Pages List"
+msgstr "Lista de páginas de mantenimiento de filtros"
+
+#: maintenance-mode-for-wordpress.php:250
+#: maintenance-mode-for-wordpress.php:251
 msgid "Settings"
 msgstr "Ajustes"
 
-#: maintenance-mode-for-wordpress.php:195
-#: maintenance-mode-for-wordpress.php:238
+#: maintenance-mode-for-wordpress.php:291
+#: maintenance-mode-for-wordpress.php:343
 msgid "Maintenance Mode Settings"
 msgstr "Configuración del modo de mantenimiento"
 
-#: maintenance-mode-for-wordpress.php:202
+#: maintenance-mode-for-wordpress.php:298
 msgid "Enable Maintenance Mode"
 msgstr "Activar Modo \"Mantenimiento”"
 
-#: maintenance-mode-for-wordpress.php:211
+#: maintenance-mode-for-wordpress.php:307
+msgid "Enable Coming Soon Mode"
+msgstr "Activar Modo “Próximamente”"
+
+#: maintenance-mode-for-wordpress.php:316
 msgid "Launch Date"
 msgstr "Fecha de lanzamiento"
 
-#: maintenance-mode-for-wordpress.php:220
+#: maintenance-mode-for-wordpress.php:325
 msgid "Maintenance Mode Page"
 msgstr "Página de modo de mantenimiento"
 
-#: maintenance-mode-for-wordpress.php:240
+#: maintenance-mode-for-wordpress.php:345
 msgid "Support"
 msgstr "Soporte"
 
-#: maintenance-mode-for-wordpress.php:243
+#: maintenance-mode-for-wordpress.php:348
 msgid "Documentation"
 msgstr "Documentación"
 
-#: maintenance-mode-for-wordpress.php:272
-#, fuzzy
+#: maintenance-mode-for-wordpress.php:377
 msgid "REST API access is restricted while the site is under maintenance."
 msgstr ""
-"El acceso a la API REST está restringido mientras el sitio esté en "
+"El acceso a la API REST está restringido mientras el sitio está en "
 "mantenimiento."
 
-#: maintenance-mode-for-wordpress.php:273
-#: maintenance-mode-for-wordpress.php:322
+#: maintenance-mode-for-wordpress.php:378
 msgid "Maintenance Mode"
 msgstr "Modo de Mantenimiento"
 
-#: maintenance-mode-for-wordpress.php:321
-#, fuzzy
-msgid "Our site is currently under maintenance. Please check back later."
+#: maintenance-mode-for-wordpress.php:441
+msgid "Our site is currently unavailable. Please check back later."
 msgstr ""
-"Nuestro sitio se encuentra actualmente en mantenimiento. Vuelva a "
-"visitarnos más tarde."
+"Nuestro sitio no está disponible en este momento. Por favor, vuelva más "
+"tarde."
 
-#: maintenance-mode-for-wordpress.php:391
-#, fuzzy
+#: maintenance-mode-for-wordpress.php:442
+msgid "Site Unavailable"
+msgstr ""
+
+#: maintenance-mode-for-wordpress.php:512
 msgid "Configure the maintenance mode settings below."
-msgstr "Configure los ajustes del modo de mantenimiento a continuación."
+msgstr "Configure a continuación los ajustes del modo de mantenimiento."
 
 #. Plugin Name of the plugin/theme
-#, fuzzy
 msgid "Maintenance Mode for WordPress®"
-msgstr "Modo de mantenimiento para WordPress®"
+msgstr "Modo de mantenimiento para WordPress"
 
 #. Plugin URI of the plugin/theme
 msgid "https://github.com/robertdevore/maintenance-mode-for-wordpress/"
 msgstr "https://github.com/robertdevore/maintenance-mode-for-wordpress/"
 
 #. Description of the plugin/theme
-#, fuzzy
 msgid ""
 "A maintenance mode plugin with customizable landing pages using the core "
 "WordPress® editor, locked down to the domain root for non-logged-in users."
 msgstr ""
-"Un complemento de modo de mantenimiento con páginas de destino "
-"personalizables que utilizan el editor principal de WordPress®, bloqueado "
-"en la raíz del dominio para usuarios que no han iniciado sesión."
+"Un plugin en modo de mantenimiento con páginas de destino personalizables "
+"que utilizan el editor principal de WordPress®, bloqueado en la raíz del "
+"dominio para los usuarios que no han iniciado sesión."
 
 #. Author of the plugin/theme
 msgid "Robert DeVore"
