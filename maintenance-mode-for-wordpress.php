@@ -64,6 +64,49 @@ use RobertDevore\WPComCheck\WPComPluginHandler;
 new WPComPluginHandler( plugin_basename( __FILE__ ), 'https://robertdevore.com/why-this-plugin-doesnt-support-wordpress-com-hosting/' );
 
 /**
+ * Adds a "Maintenance Mode is Active" notice in the admin toolbar.
+ *
+ * @since 1.1.0
+ */
+function maintenance_mode_wp_admin_bar_notice( $wp_admin_bar ) {
+    // Check if Maintenance Mode is enabled.
+    if ( get_option( 'maintenance_mode_wp_enabled' ) ) {
+        // Settings page URL.
+        $settings_url = admin_url( 'edit.php?post_type=maintenance_page&page=maintenance_mode_wp_settings' );
+
+        // Add the notice to the admin bar.
+        $wp_admin_bar->add_node( [
+            'id'    => 'maintenance-mode-notice',
+            'title' => '<span>' . esc_html__( 'MAINTENANCE MODE IS ACTIVE', 'maintenance-mode-wp' ) . '</span>',
+            'href'  => $settings_url,
+            'meta'  => [
+                'title' => __( 'Click to manage Maintenance Mode settings', 'maintenance-mode-wp' ),
+            ],
+        ] );
+    }
+}
+add_action( 'admin_bar_menu', 'maintenance_mode_wp_admin_bar_notice', 100 );
+
+/**
+ * Enqueue admin styles for Maintenance Mode only when active.
+ *
+ * @since 1.1.0
+ */
+function maintenance_mode_wp_enqueue_toolbar_styles() {
+    // Check if Maintenance Mode is active and the admin toolbar is visible.
+    if ( get_option( 'maintenance_mode_wp_enabled' ) && is_admin_bar_showing() ) {
+        wp_enqueue_style(
+            'maintenance-mode-wp-toolbar-styles',
+            plugin_dir_url( __FILE__ ) . 'assets/css/toolbar.css',
+            [],
+            MAINTENANCE_MODE_VERSION
+        );
+    }
+}
+add_action( 'admin_enqueue_scripts', 'maintenance_mode_wp_enqueue_toolbar_styles' ); // Load in admin
+add_action( 'wp_enqueue_scripts', 'maintenance_mode_wp_enqueue_toolbar_styles' ); // Load on front-end if toolbar is active
+
+/**
  * Main plugin class for Maintenance Mode functionality.
  */
 class Maintenance_Mode_WP {

@@ -1,0 +1,12 @@
+#wp-admin-bar-maintenance-mode-notice > a {
+    background: red !important;
+    color: white !important;
+    border-radius: 3px !important;
+    font-weight: bold !important;
+    text-transform: uppercase !important;
+}
+
+#wp-admin-bar-maintenance-mode-notice > a:hover {
+    background: darkred !important;
+    color: white !important;
+}
