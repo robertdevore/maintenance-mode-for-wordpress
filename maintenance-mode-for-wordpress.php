@@ -12,7 +12,7 @@
  * Plugin Name: Maintenance Mode for WordPress®
  * Description: A maintenance mode plugin with customizable landing pages using the core WordPress® editor, locked down to the domain root for non-logged-in users.
  * Plugin URI:  https://github.com/robertdevore/maintenance-mode-for-wordpress/
- * Version:     1.0.1
+ * Version:     1.1.0
  * Author:      Robert DeVore
  * Author URI:  https://robertdevore.com/
  * License:     GPL-2.0+
@@ -25,7 +25,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 // Define the plugin version.
-define( 'MAINTENANCE_MODE_VERSION', '1.0.1' );
+define( 'MAINTENANCE_MODE_VERSION', '1.1.0' );
 
 // Load plugin text domain for translations
 function maintenance_mode_wp_load_textdomain() {
@@ -66,7 +66,8 @@ new WPComPluginHandler( plugin_basename( __FILE__ ), 'https://robertdevore.com/w
 /**
  * Adds a "Maintenance Mode is Active" notice in the admin toolbar.
  *
- * @since 1.1.0
+ * @since  1.1.0
+ * @return void
  */
 function maintenance_mode_wp_admin_bar_notice( $wp_admin_bar ) {
     // Check if Maintenance Mode or Coming Soon Mode is enabled.
@@ -196,10 +197,10 @@ class Maintenance_Mode_WP {
             'labels' => [
                 'name'                  => esc_html__( 'Maintenance', 'maintenance-mode-wp' ),
                 'singular_name'         => esc_html__( 'Maintenance Page', 'maintenance-mode-wp' ),
-                'menu_name'             => esc_html__( 'Maintenance Pages', 'maintenance-mode-wp' ),
-                'name_admin_bar'        => esc_html__( 'Maintenance Pages', 'maintenance-mode-wp' ),
-                'all_items'             => esc_html__( 'All Maintenance Pages', 'maintenance-mode-wp' ),
-                'add_new_item'          => esc_html__( 'Add New Maintenance Page', 'maintenance-mode-wp' ),
+                'menu_name'             => esc_html__( 'Maintenance', 'maintenance-mode-wp' ),
+                'name_admin_bar'        => esc_html__( 'Maintenance', 'maintenance-mode-wp' ),
+                'all_items'             => esc_html__( 'All Pages', 'maintenance-mode-wp' ),
+                'add_new_item'          => esc_html__( 'Add New Page', 'maintenance-mode-wp' ),
                 'add_new'               => esc_html__( 'Add New', 'maintenance-mode-wp' ),
                 'new_item'              => esc_html__( 'New Maintenance Page', 'maintenance-mode-wp' ),
                 'edit_item'             => esc_html__( 'Edit Maintenance Page', 'maintenance-mode-wp' ),
