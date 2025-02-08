@@ -54,7 +54,7 @@ $myUpdateChecker = PucFactory::buildUpdateChecker(
 $myUpdateChecker->setBranch( 'main' );
 
 // Include the autoload for Composer.
-if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
+if ( ! class_exists( 'RobertDevore\WPComCheck\WPComPluginHandler' ) ) {
     require_once __DIR__ . '/vendor/autoload.php';
 }
 
